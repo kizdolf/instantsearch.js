@@ -7,9 +7,12 @@ import {
   capitalize,
   assertFacetDefined,
   getDisplayName,
+  defer,
 } from './utils';
 
 import {SearchParameters, SearchResults} from 'algoliasearch-helper';
+
+jest.useFakeTimers();
 
 describe('utils', () => {
   describe('isSpecialClick', () => {
@@ -83,7 +86,9 @@ describe('utils', () => {
 
     it('gets the right displayName from React.createClass', () => {
       const SuperComponent = React.createClass({
-        render() { return null; },
+        render() {
+          return null;
+        },
         displayName: 'SuperComponent',
       });
 
@@ -92,6 +97,23 @@ describe('utils', () => {
 
     it('sets a default displayName when not able to find one', () => {
       expect(getDisplayName(() => null)).toBe('UnknownComponent');
+    });
+  });
+
+  describe('defer', () => {
+    it('calling a function asynchronously, should be done as soon as possible.', done => {
+      let count = 0;
+
+      defer(() => { count = 1; });
+
+      Promise.resolve().then(() => {
+        try {
+          expect(count).toEqual(1);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
+      });
     });
   });
 });

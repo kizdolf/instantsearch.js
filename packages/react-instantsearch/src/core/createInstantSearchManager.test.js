@@ -121,7 +121,7 @@ describe('createInstantSearchManager', () => {
   });
 
   describe('getWidgetsIds', () => {
-    it('returns the list of ids of all registered widgets', () => {
+    it('returns the list of ids of all registered widgets', done => {
       const ism = createInstantSearchManager({
         indexName: 'index',
         initialState: {},
@@ -129,18 +129,24 @@ describe('createInstantSearchManager', () => {
         algoliaClient: client,
       });
 
-      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'a'})});
-      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'b'})});
-      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'c'})});
-      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'd'})});
-
       const widgetIDsT0 = ism.getWidgetsIds().sort();
       expect(widgetIDsT0).toEqual([]);
 
-      jest.runAllTimers();
+      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'a'})});
+      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'b'})});
+      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'c'})});
 
-      const widgetIDsT1 = ism.getWidgetsIds().sort();
-      expect(widgetIDsT1).toEqual(['a', 'b', 'c', 'd']);
+      ism.widgetsManager.registerWidget({getMetadata: () => ({id: 'd'})});
+
+      Promise.resolve().then(() => {
+        try {
+          const widgetIDsT1 = ism.getWidgetsIds().sort();
+          expect(widgetIDsT1).toEqual(['a', 'b', 'c', 'd']);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
+      });
     });
   });
 });

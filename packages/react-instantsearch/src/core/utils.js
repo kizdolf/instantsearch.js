@@ -58,3 +58,6 @@ export function assertFacetDefined(searchParameters, searchResults, facet) {
 export function getDisplayName(Component) {
   return Component.displayName || Component.name || 'UnknownComponent';
 }
+
+const resolved = typeof Promise !== 'undefined' && Promise.resolve();
+export const defer = resolved ? f => { resolved.then(f); } : setTimeout;

@@ -19,30 +19,34 @@ describe('createWidgetsManager', () => {
       expect(wm.getWidgets().length).toBe(0);
     });
 
-    it('schedules an update', () => {
-      jest.useFakeTimers();
+    it('schedules an update', done => {
       const onUpdate = jest.fn();
       const wm = createWidgetsManager(onUpdate);
-      jest.runAllImmediates();
       wm.registerWidget({});
-      expect(onUpdate.mock.calls.length).toBe(0);
-      jest.runAllImmediates();
-      expect(onUpdate.mock.calls.length).toBe(1);
-      jest.useRealTimers();
+      Promise.resolve().then(() => {
+        try {
+          expect(onUpdate.mock.calls.length).toBe(1);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
+      });
     });
   });
 
   describe('update', () => {
-    it('schedules an update', () => {
-      jest.useFakeTimers();
+    it('schedules an update', done => {
       const onUpdate = jest.fn();
       const wm = createWidgetsManager(onUpdate);
-      jest.runAllImmediates();
       wm.update();
-      expect(onUpdate.mock.calls.length).toBe(0);
-      jest.runAllImmediates();
-      expect(onUpdate.mock.calls.length).toBe(1);
-      jest.useRealTimers();
+      Promise.resolve().then(() => {
+        try {
+          expect(onUpdate.mock.calls.length).toBe(1);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
+      });
     });
   });
 });
